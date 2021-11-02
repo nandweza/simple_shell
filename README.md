@@ -3,7 +3,10 @@
 for this project, students are expected to look at these concepts:
 - [Everything you need to know to start coding your own shell](https://alx-intranet.hbtn.io/concepts/64)
 - [Approaching a Project](https://alx-intranet.hbtn.io/concepts/64)
+
+
 The gates of shell is a Holberton School project in the first trimester, helping student to understand the advanced concepts behind the shell program include process, system call, bit manipulation, file managment, error handling
+
 ## Background Context
 Write a simple UNIX command interpreter.
 Resources
