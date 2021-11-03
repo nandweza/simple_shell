@@ -1,30 +1,50 @@
 #include "main.h"
-
 /**
- * main - a Simple Unix interpreter.
- *
- * Description: Displays a prompt and wait for the user to type a command.
- * Split the input into arguments and execute it.
- * Prints result on screen then display prompt again.
- *
- * Return: On success 1.
- */
-int main(void)
+* main - read, execute and print output loop
+* @ac: argument count
+* @av: argument vector
+* @envp: environment vector
+*
+* Return: 0
+*/
+
+int main(int ac, char **av, char *envp[])
 {
-	char *buffer;
-	char **args;
-	int status = 1;
-
-	while (status)
+	char *line = NULL, *pathcommand = NULL, *path = NULL;
+	size_t bufsize = 0;
+	ssize_t linesize = 0;
+	char **command = NULL, **paths = NULL;
+	(void)envp, (void)av;
+	if (ac < 1)
+		return (-1);
+	signal(SIGINT, handle_signal);
+	while (1)
 	{
-		printf("cisfun$ ");
-		buffer = get_line();
-		args = split_line(buffer);
-		status = exec_line(args);
+		free_buffers(command);
+		free_buffers(paths);
+		free(pathcommand);
+		prompt_user();
+		linesize = getline(&line, &bufsize, stdin);
+		if (linesize < 0)
+			break;
+		info.ln_count++;
+		if (line[linesize - 1] == '\n')
+			line[linesize - 1] = '\0';
+		command = tokenizer(line);
+		if (command == NULL || *command == NULL || **command == '\0')
+			continue;
+		if (checker(command, line))
+			continue;
+		path = find_path();
+		paths = tokenizer(path);
+		pathcommand = test_path(paths, command[0]);
+		if (!pathcommand)
+			perror(av[0]);
+		else
+			execution(pathcommand, command);
 	}
-
-	free(buffer);
-	free(args);
-
-	return (1);
+	if (linesize < 0 && flags.interactive)
+		write(STDERR_FILENO, "\n", 1);
+	free(line);
+	return (0);
 }

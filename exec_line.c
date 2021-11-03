@@ -1,24 +1,28 @@
 #include "main.h"
+
 /**
- * exec_line - Executes the program.
- * @args: Pointer pointing to arguments.
- *
- * Return: On success 1.
+ * execution - executes commands entered by users
+ *@cp: command
+ *@cmd:vector array of pointers to commands
+ * Return: 0
  */
-int exec_line(char **args)
+void execution(char *cp, char **cmd)
 {
+	pid_t child_pid;
 	int status;
-	pid_t pid;
+	char **env = environ;
 
-	pid = fork();
-
-	if (pid == 0)
+	child_pid = fork();
+	if (child_pid < 0)
+		perror(cp);
+	if (child_pid == 0)
 	{
-		if (execve(args[0], args, NULL) == -1)
-			perror(args[0]);
+		execve(cp, cmd, env);
+		perror(cp);
+		free(cp);
+		free_buffers(cmd);
+		exit(98);
 	}
 	else
 		wait(&status);
-
-	return (1);
 }
